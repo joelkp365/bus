@@ -1,0 +1,68 @@
+Start the Kubernetes cluster:
+minikube start --driver=docker
+minikube status
+kubectl get nodes
+
+Create the nginx pod using YAML:
+notepad nginx-pod.yaml
+
+Paste the following in the file:
+apiVersion: v1
+kind: Pod
+metadata:
+name: nginx-pod
+labels:
+app: nginx
+spec:
+containers:
+
+name: nginx
+image: nginx:latest
+ports:
+
+containerPort: 80
+
+Apply the YAML and verify the pod:
+kubectl apply -f nginx-pod.yaml
+kubectl get pods
+kubectl describe pod nginx-pod
+
+Access the pod in browser using port-forward:
+kubectl port-forward pod/nginx-pod 8080:80
+Open browser at: http://localhost:8080
+
+Stop port-forward using Ctrl + C
+
+Delete the pod:
+kubectl delete pod nginx-pod
+
+Create a deployment:
+kubectl create deployment my-nginx --image=nginx
+kubectl get deployments
+kubectl get pods -l app=my-nginx
+
+Scale the deployment to 3 replicas:
+kubectl scale deployment my-nginx --replicas=3
+kubectl get pods
+
+Perform a rolling update:
+kubectl set image deployment/my-nginx nginx=nginx:1.25
+kubectl rollout status deployment/my-nginx
+
+Rollback the deployment if required:
+kubectl rollout undo deployment/my-nginx
+
+Expose the deployment as a NodePort service:
+kubectl expose deployment my-nginx --type=NodePort --port=80
+kubectl get svc
+minikube service my-nginx --url
+Open the displayed URL in your browser to see the Nginx page.
+
+Cleanup all resources:
+kubectl delete svc my-nginx
+kubectl delete deployment my-nginx
+kubectl delete all --all -n default
+
+Stop and delete the Minikube cluster:
+minikube stop
+minikube delete
